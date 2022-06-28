@@ -5,8 +5,12 @@
 package it.polito.tdp.nyc;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.nyc.model.Dist;
 import it.polito.tdp.nyc.model.Model;
+import it.polito.tdp.nyc.model.Simulatore;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -39,7 +43,7 @@ public class FXMLController {
     private ComboBox<String> cmbProvider; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbQuartiere"
-    private ComboBox<?> cmbQuartiere; // Value injected by FXMLLoader
+    private ComboBox<String> cmbQuartiere; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtMemoria"
     private TextField txtMemoria; // Value injected by FXMLLoader
@@ -58,17 +62,33 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-    	
+    	txtResult.clear();
+    	String provider = cmbProvider.getValue();
+    	String msg = model.creaGrafo(provider);
+    	txtResult.appendText(msg);
+    	cmbQuartiere.getItems().addAll(model.getV());
     }
 
     @FXML
     void doQuartieriAdiacenti(ActionEvent event) {
-    	
+    	String city = cmbQuartiere.getValue();
+    	List<Dist> ad = model.getAdiacenti(city);
+    	for(Dist d : ad) {
+    		txtResult.appendText(d.getC1()+" "+d.getDist()+"\n");
+    	}
     }
 
     @FXML
     void doSimula(ActionEvent event) {
-
+        String provider = cmbProvider.getValue();
+        int n = Integer.parseInt(txtMemoria.getText());
+        String qPart = cmbQuartiere.getValue();
+    	Simulatore sim = new Simulatore(model.getGrafo(), provider, qPart, n);
+    	sim.init();
+    	sim.run();
+    	
+    	txtResult.appendText("DURATA "+sim.getDurata());
+    	txtResult.appendText("Numero quartieri visitati "+sim.getQuartieriVisitati().size());
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -87,6 +107,7 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	cmbProvider.getItems().addAll(model.getProviders());
     }
 
 }
