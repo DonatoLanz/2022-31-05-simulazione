@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import it.polito.tdp.nyc.model.Dist;
 import it.polito.tdp.nyc.model.Model;
 import it.polito.tdp.nyc.model.Simulatore;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -52,13 +53,13 @@ public class FXMLController {
     private TextArea txtResult; // Value injected by FXMLLoader
     
     @FXML // fx:id="clQuartiere"
-    private TableColumn<?, ?> clQuartiere; // Value injected by FXMLLoader
+    private TableColumn<Dist, String> clQuartiere; // Value injected by FXMLLoader
  
     @FXML // fx:id="clDistanza"
-    private TableColumn<?, ?> clDistanza; // Value injected by FXMLLoader
+    private TableColumn<Dist,Double> clDistanza; // Value injected by FXMLLoader
     
     @FXML // fx:id="tblQuartieri"
-    private TableView<?> tblQuartieri; // Value injected by FXMLLoader
+    private TableView<Dist> tblQuartieri; // Value injected by FXMLLoader
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
@@ -73,6 +74,7 @@ public class FXMLController {
     void doQuartieriAdiacenti(ActionEvent event) {
     	String city = cmbQuartiere.getValue();
     	List<Dist> ad = model.getAdiacenti(city);
+    	tblQuartieri.setItems(FXCollections.observableArrayList(ad));
     	for(Dist d : ad) {
     		txtResult.appendText(d.getC1()+" "+d.getDist()+"\n");
     	}
